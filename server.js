@@ -4,18 +4,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const methodOverride = require('method-override');
 
 // Creating the Express Application
 const app = express();
 
+// Replacing Mongoose Promise
+mongoose.Promise = global.Promise;
+
 // Requiring Models
 require('./app/models/user.model');
-require('./app/models/pr-patient.model.js');
+require('./app/models/patientModel.js');
 
 // Requiring Routers
 const UserRouter = require('./app/routes/user.route');
-const PatientRouter = require('./app/routes/pr-patient.route.js');
+const PatientRouter = require('./app/routes/patient.Route.js');
 
 // Enabling CORS Support
 app.use(function (req, res, next) {
@@ -30,8 +32,7 @@ const db = require('./config/db');
 // Setting the PORT
 const port = process.env.PORT || 7070;
 
-// Replacing Mongoose Promise
-mongoose.Promise = global.Promise;
+
 
 // Connecting to DB
 mongoose.connect(db.url, err => {
@@ -45,16 +46,13 @@ mongoose.connect(db.url, err => {
 // Using dependent functions
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(methodOverride('X-HTTP-Method-Override'));
+
 
 // Returning for Root Request
-app.get('/', (req, res) => {
-    res.send('<h1>OPD Module Service<br>♥ S L I I T</h1>');
-});
 
 // Returning other Requests
 app.use('/api/users', UserRouter);
-app.use('/api/patients', PatientRouter);
+app.use('/patient', PatientRouter);
 
 // Create Server and Listen for Requests
 app.listen(port, err => {
